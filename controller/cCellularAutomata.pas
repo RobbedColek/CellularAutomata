@@ -14,8 +14,9 @@ type
 
       procedure PrepareRules(Rule : Integer);
       procedure PrepareGrid(Iterations, Width : Integer);
-      procedure PrepareOldGrid(Iterations, Width : Integer);
       function CheckRule(Row, Cell1, Cell2, Cell3: Integer): Boolean;
+      procedure ClearOldGrid(Iterations, Width : Integer);
+      procedure PrepareOldGrid(Iterations, Width : Integer);
     public
       procedure Calculate(Rule : Integer;
         Iterations : Integer;
@@ -38,10 +39,10 @@ var
   J: Integer;
   Counter, PrevRow, NextRow, Prev, Next : Integer;
 begin
-  PrepareOldGrid(Width, Iterations);
+  ClearOldGrid(Iterations, Width);
 
   for I := 0 to Iterations - 1 do begin
-    for J := 0 to Iterations do begin
+    for J := 0 to Width  do begin
       Counter := 0;
 
       PrevRow := I - 1;
@@ -216,6 +217,14 @@ begin
   end;
 end;
 
+procedure TCellularAutomata.ClearOldGrid(Iterations, Width : Integer);
+var I, J : Integer;
+begin
+  for I := 0 to High(OldGrid) do begin
+    for J := 0 to High(OldGrid[I]) do OldGrid[I][J] := 0;
+  end;
+end;
+
 procedure TCellularAutomata.PrepareGridGameOfLife(Iterations, Width : Integer);
 var I : Integer;
 begin
@@ -223,6 +232,8 @@ begin
   for I := 0 to High(Grid) do begin
     SetLength(Grid[I], Width);
   end;
+
+  PrepareOldGrid(Iterations, Width);
 end;
 
 function TCellularAutomata.GetValue(I, J: Integer): Integer;
